@@ -1,93 +1,99 @@
 <html lang="en">
 <head>
-    <style>
-        body {
-            background-color: #222;
-            color: #eee;
-            display: flex;
-            padding: 20px;
-            justify-content: center;
-        }
-        img {
-            display: block;
-            width: 400px;
-            height: auto;
-            border: 1px solid #777;
-        }
-        .root {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        section {
-            display: flex;
-            flex-direction: row;
-            gap: 4px;
-        }
-        .loading {
-            padding: 20px;
-        }
-        table {
-            width: 350px;
-            text-align: center;
-            background-color: #222;
-            border: 1px solid #777;
-            border-collapse: collapse;
-        }
-        td {
-            width: 70px;
-            border: 1px solid #666;
-            padding: 4px 10px;
-        }
-    </style>
+  <style>
+    body {
+      background-color: #222;
+      color: #eee;
+      display: flex;
+      padding: 20px;
+      justify-content: center;
+    }
+
+    img {
+      display: block;
+      width: 400px;
+      height: auto;
+      border: 1px solid #777;
+    }
+
+    .root {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    section {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+    }
+
+    .loading {
+      padding: 20px;
+    }
+
+    table {
+      width: 350px;
+      text-align: center;
+      background-color: #222;
+      border: 1px solid #777;
+      border-collapse: collapse;
+    }
+
+    td {
+      width: 70px;
+      border: 1px solid #666;
+      padding: 4px 10px;
+    }
+  </style>
 </head>
 <body>
 <div id="root" class="root">
-    <div>Drag images here</div>
+  <div>Drag images here</div>
 </div>
 <form action="/uploader" method="POST" enctype="multipart/form-data">
-    <input hidden multiple type="file" name="file" />
+  <input hidden multiple type="file" name="file"/>
 </form>
 <script>
-    document.addEventListener('dragover', function (e) {
-      e.preventDefault();
-    }, false);
+  document.addEventListener('dragover', function (e) {
+    e.preventDefault()
+  }, false)
 
-    document.addEventListener('drop', function (e) {
-      e.preventDefault();
+  document.addEventListener('drop', function (e) {
+    e.preventDefault()
 
-      // Clear html
-      const root = document.getElementById('root');
-      root.innerHTML = '';
+    // Clear html
+    const root = document.getElementById('root')
+    root.innerHTML = ''
 
-      const files = e.dataTransfer.files;
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function() {
-            // Build section HTML
-            const section = document.createElement('section');
-            const image = document.createElement('img');
-            image.src = reader.result;
-            const content = document.createElement('table');
-            content.innerHTML = '<div class="loading">Loading...</div>';
-            section.appendChild(image);
-            section.appendChild(content);
-            root.appendChild(section);
+    const files = e.dataTransfer.files
+    Array.from(files).forEach(file => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onloadend = function () {
+        // Build section HTML
+        const section = document.createElement('section')
+        const image = document.createElement('img')
+        image.src = reader.result
+        const content = document.createElement('table')
+        content.innerHTML = '<div class="loading">Loading...</div>'
+        section.appendChild(image)
+        section.appendChild(content)
+        root.appendChild(section)
 
-            // Submit the data
-            const form = new FormData();
-            form.append('file', file);
-            const xhr = new XMLHttpRequest();
-            xhr.onload = function() {
-              content.innerHTML = xhr.responseText;
-              console.log(xhr.response);
-            }
-            xhr.open('post', '/parse', true);
-            xhr.send(form);
+        // Submit the data
+        const form = new FormData()
+        form.append('file', file)
+        const xhr = new XMLHttpRequest()
+        xhr.onload = function () {
+          content.innerHTML = xhr.responseText
+          console.log(xhr.response)
         }
-      })
+        xhr.open('post', '/parse', true)
+        xhr.send(form)
+      }
     })
+  })
 </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import os
 import cv2
 from glob import glob
-from parser import parse_image
+from app.parser import parse_image
 
 IMAGES_PATH = 'assets/images'
 

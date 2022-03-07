@@ -3,7 +3,6 @@ import cv2
 import easyocr
 from multiprocessing.pool import ThreadPool
 import numpy as np
-import functools
 
 MODELS_PATH = os.path.join(os.path.dirname(__file__), './models')
 MODEL_NAME = 'custom_trade'
@@ -75,6 +74,7 @@ reader = init_reader()
 def predict_text(image: np.ndarray):
     predicted = reader.readtext(
         image,
+        workers=0,
         slope_ths=0.5,
         ycenter_ths=1.0,
         height_ths=1.0,
@@ -144,7 +144,7 @@ def parse_image(image: np.ndarray):
         line_gray = trim_image(line_gray)
         filtered_lines.append(line_gray)
 
-    text_lines = map(predict_text, filtered_lines)
+    text_lines = pool.map(predict_text, filtered_lines)
     responses = [
         parse_text(line)
         for line in text_lines

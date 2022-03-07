@@ -1,0 +1,16 @@
+<thead>
+    <td>Stock</td>
+    <td>C1</td>
+    <td>C2</td>
+    <td>P1</td>
+    <td>P2</td>
+</thead>
+<tbody>
+{% for line in results %}
+    <tr>
+        {% for row in line %}
+            <td>{{ row }}</td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+</tbody>

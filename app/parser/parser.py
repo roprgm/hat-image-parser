@@ -7,8 +7,8 @@ import numpy as np
 MODELS_PATH = os.path.join(os.path.dirname(__file__), './models')
 MODEL_NAME = 'custom_trade'
 
-RED = np.array([20, 0, 255])
-GREEN = np.array([20, 255, 0])
+RED = np.array([50, 50, 255])
+GREEN = np.array([50, 255, 50])
 WHITE = np.array([255, 255, 255])
 
 IGNORED_CHARS = ': -'
@@ -27,7 +27,7 @@ def map_range(value, in_min, in_max, out_min, out_max):
 
 def color_mask(image: np.ndarray, color: np.ndarray):
     diff = np.max(np.absolute(image - color), axis=-1)
-    return map_range(diff, 150, 64, 0, 255).astype(np.uint8)
+    return map_range(diff, 150, 80, 0, 255).astype(np.uint8)
 
 
 def crop_image(image: np.ndarray, bbox: tuple, margin: int = 0):
@@ -60,7 +60,6 @@ def init_reader():
     print('Init reader')
     return easyocr.Reader(
         ['en'],
-        gpu=False,
         model_storage_directory=MODELS_PATH,
         user_network_directory=MODELS_PATH,
         download_enabled=False,
@@ -88,7 +87,7 @@ def predict_text(image: np.ndarray):
     for char in IGNORED_CHARS:
         text.replace(char, '')
 
-    return text
+    return text.strip()
 
 
 def parse_text(text: str):
@@ -114,7 +113,7 @@ def parse_text(text: str):
     return out
 
 
-workers = os.environ.get('PARSER_WORKERS', 4)
+workers = os.environ.get('PARSER_WORKERS', 8)
 pool = ThreadPool(processes=workers)
 print(f'Using {workers} workers.')
 
@@ -122,7 +121,7 @@ print(f'Using {workers} workers.')
 def parse_image(image: np.ndarray):
     # Split lines
     image_rg = color_mask(image, GREEN) + color_mask(image, RED)
-    line_groups = np.split(image, np.nonzero(np.sum(image_rg, axis=1) < 20)[0] + 1)
+    line_groups = np.split(image, np.nonzero(np.sum(image_rg, axis=1) < 40)[0] + 1)
 
     # Filter empty lines
     line_groups = [g for g in line_groups if g.shape[0] > 40]
@@ -140,7 +139,7 @@ def parse_image(image: np.ndarray):
         line_gray = ensure_line_size(line_gray)
 
         # Remove initial symbol
-        line_gray = line_gray[:, 80:]
+        # line_gray = line_gray[:, 80:]
         line_gray = trim_image(line_gray)
         filtered_lines.append(line_gray)
 
